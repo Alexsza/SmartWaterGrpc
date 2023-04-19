@@ -8,11 +8,6 @@ public interface RainwaterResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>int32 tankLevels = 1;</code>
-   */
-  int getTankLevels();
-
-  /**
    * <code>int32 currentTankUsed = 2;</code>
    */
   int getCurrentTankUsed();

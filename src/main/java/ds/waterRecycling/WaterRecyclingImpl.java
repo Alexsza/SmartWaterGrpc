@@ -57,9 +57,9 @@ public final class WaterRecyclingImpl {
       "\"\035\n\013TankRequest\022\016\n\006tankId\030\001 \001(\005\"!\n\014TankR" +
       "esponse\022\021\n\ttankLevel\030\001 \001(\005\"\037\n\rMonitorLev" +
       "els\022\016\n\006tankId\030\001 \001(\005\"6\n\016LevelsResponse\022\016\n" +
-      "\006tankId\030\001 \001(\005\022\024\n\014currentLevel\030\002 \001(\005\"\037\n\rR" +
-      "ainwaterTank\022\016\n\006tankId\030\001 \001(\005\"@\n\021Rainwate" +
-      "rResponse\022\022\n\ntankLevels\030\001 \001(\005\022\027\n\017current" +
+      "\006tankId\030\001 \001(\005\022\024\n\014currentLevel\030\002 \001(\005\"3\n\rR" +
+      "ainwaterTank\022\016\n\006tankId\030\001 \001(\005\022\022\n\ntankLeve" +
+      "ls\030\002 \001(\005\",\n\021RainwaterResponse\022\027\n\017current" +
       "TankUsed\030\002 \001(\0052\242\002\n\016WaterRecycling\022Q\n\016Che" +
       "ckTankLevel\022\035.RecyclingService.TankReque" +
       "st\032\036.RecyclingService.TankResponse\"\000\022Z\n\021" +
@@ -111,13 +111,13 @@ public final class WaterRecyclingImpl {
     internal_static_RecyclingService_RainwaterTank_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RecyclingService_RainwaterTank_descriptor,
-        new java.lang.String[] { "TankId", });
+        new java.lang.String[] { "TankId", "TankLevels", });
     internal_static_RecyclingService_RainwaterResponse_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_RecyclingService_RainwaterResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RecyclingService_RainwaterResponse_descriptor,
-        new java.lang.String[] { "TankLevels", "CurrentTankUsed", });
+        new java.lang.String[] { "CurrentTankUsed", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

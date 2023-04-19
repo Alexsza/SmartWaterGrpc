@@ -16,7 +16,6 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private RainwaterResponse() {
-    tankLevels_ = 0;
     currentTankUsed_ = 0;
   }
 
@@ -44,11 +43,6 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 8: {
-
-            tankLevels_ = input.readInt32();
-            break;
-          }
           case 16: {
 
             currentTankUsed_ = input.readInt32();
@@ -86,15 +80,6 @@ private static final long serialVersionUID = 0L;
             ds.waterRecycling.RainwaterResponse.class, ds.waterRecycling.RainwaterResponse.Builder.class);
   }
 
-  public static final int TANKLEVELS_FIELD_NUMBER = 1;
-  private int tankLevels_;
-  /**
-   * <code>int32 tankLevels = 1;</code>
-   */
-  public int getTankLevels() {
-    return tankLevels_;
-  }
-
   public static final int CURRENTTANKUSED_FIELD_NUMBER = 2;
   private int currentTankUsed_;
   /**
@@ -118,9 +103,6 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (tankLevels_ != 0) {
-      output.writeInt32(1, tankLevels_);
-    }
     if (currentTankUsed_ != 0) {
       output.writeInt32(2, currentTankUsed_);
     }
@@ -133,10 +115,6 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (tankLevels_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, tankLevels_);
-    }
     if (currentTankUsed_ != 0) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(2, currentTankUsed_);
@@ -157,8 +135,6 @@ private static final long serialVersionUID = 0L;
     ds.waterRecycling.RainwaterResponse other = (ds.waterRecycling.RainwaterResponse) obj;
 
     boolean result = true;
-    result = result && (getTankLevels()
-        == other.getTankLevels());
     result = result && (getCurrentTankUsed()
         == other.getCurrentTankUsed());
     result = result && unknownFields.equals(other.unknownFields);
@@ -172,8 +148,6 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + TANKLEVELS_FIELD_NUMBER;
-    hash = (53 * hash) + getTankLevels();
     hash = (37 * hash) + CURRENTTANKUSED_FIELD_NUMBER;
     hash = (53 * hash) + getCurrentTankUsed();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -309,8 +283,6 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      tankLevels_ = 0;
-
       currentTankUsed_ = 0;
 
       return this;
@@ -339,7 +311,6 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public ds.waterRecycling.RainwaterResponse buildPartial() {
       ds.waterRecycling.RainwaterResponse result = new ds.waterRecycling.RainwaterResponse(this);
-      result.tankLevels_ = tankLevels_;
       result.currentTankUsed_ = currentTankUsed_;
       onBuilt();
       return result;
@@ -389,9 +360,6 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(ds.waterRecycling.RainwaterResponse other) {
       if (other == ds.waterRecycling.RainwaterResponse.getDefaultInstance()) return this;
-      if (other.getTankLevels() != 0) {
-        setTankLevels(other.getTankLevels());
-      }
       if (other.getCurrentTankUsed() != 0) {
         setCurrentTankUsed(other.getCurrentTankUsed());
       }
@@ -421,32 +389,6 @@ private static final long serialVersionUID = 0L;
           mergeFrom(parsedMessage);
         }
       }
-      return this;
-    }
-
-    private int tankLevels_ ;
-    /**
-     * <code>int32 tankLevels = 1;</code>
-     */
-    public int getTankLevels() {
-      return tankLevels_;
-    }
-    /**
-     * <code>int32 tankLevels = 1;</code>
-     */
-    public Builder setTankLevels(int value) {
-      
-      tankLevels_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 tankLevels = 1;</code>
-     */
-    public Builder clearTankLevels() {
-      
-      tankLevels_ = 0;
-      onChanged();
       return this;
     }
 

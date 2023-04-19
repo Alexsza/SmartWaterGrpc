@@ -11,4 +11,9 @@ public interface RainwaterTankOrBuilder extends
    * <code>int32 tankId = 1;</code>
    */
   int getTankId();
+
+  /**
+   * <code>int32 tankLevels = 2;</code>
+   */
+  int getTankLevels();
 }

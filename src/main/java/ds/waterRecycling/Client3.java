@@ -48,32 +48,40 @@ public class Client3 extends JFrame {
     private static WaterRecyclingStub asyncStub;
     private static int userInput = 0;
     private static String SERVICE_TYPE = "_waterRecycling._tcp.local.";
-    private static String SERVICE_NAME = "Recycling_Service";
+    private static String SERVICE_NAME = "WaterRecycling";
     private static String SERVICE_HOST = "localhost";
     private static int SERVICE_PORT = 50053;
 
     private JLabel tankRequestLabel, MonitorLevelsLabel, RainwaterTankLabel;
-    private static JTextField userInputField;
-    private JButton CheckTankLevelsButton, MonitorLevelsButton, SwitchRainwaterTankButton;
+    private static JTextField userInputField, userInputField2;
+    private JButton CheckTankLevelButton, MonitorLevelsButton, SwitchRainwaterTankButton;
     private static JTextArea textArea;
 
     public Client3() {
-        super("Water Recycling Service");
+        super("Recycling Service");
 
         tankRequestLabel = new JLabel("Enter TankID");
         userInputField = new JTextField(10);
-        CheckTankLevelsButton = new JButton("Set");
-        CheckTankLevelsButton.addActionListener(e -> CheckTankLevels());
+        CheckTankLevelButton = new JButton("Check Tank Level");
+        CheckTankLevelButton.addActionListener(e -> checkTankLevel());
+
+        MonitorLevelsLabel = new JLabel("Monitor TankID: ");
+        userInputField2 = new JTextField(10);
+        MonitorLevelsButton = new JButton("Request Monitoring");
+        MonitorLevelsButton.addActionListener(e -> monitorTankLevels());
 
         RainwaterTankLabel = new JLabel("Rainwater Tanks");
         SwitchRainwaterTankButton = new JButton("Switch");
-        SwitchRainwaterTankButton.addActionListener(e -> SwitchToRainwaterTank());
+        SwitchRainwaterTankButton.addActionListener(e -> switchToRainwaterTank());
+
 
         JPanel panel = new JPanel();
         panel.add(tankRequestLabel);
         panel.add(userInputField);
-        panel.add(CheckTankLevelsButton);
-        //need to add Monitor Tanklevel controls
+        panel.add(CheckTankLevelButton);
+        panel.add(MonitorLevelsLabel);
+        panel.add(userInputField2);
+        panel.add(MonitorLevelsButton);
         panel.add(RainwaterTankLabel);
         panel.add(SwitchRainwaterTankButton);
 
@@ -125,35 +133,18 @@ public class Client3 extends JFrame {
 
     }
 
-    // unary rpc
-    public static void CheckTankLevels() {
-		/*
-		userInput = Integer.parseInt(userInputField.getText());
-		TankRequest req = TankRequest.newBuilder().TankResponse(userInput).build();
-
-		// retrieving reply from service
-		TankTempConfirm response = blockingStub.setTankTemperature(req);
-
-		System.out.println("Server response: " + response.getConfirmation());
-		textArea.append("Tank temperature set to " + response.getConfirmation() + "\n");
-
-    */
-        //	JOptionPane to test response
-        //	JOptionPane.showMessageDialog(null, "Tank temperature set to " + response.getConfirmation());
-    }
-
     // client side streaming
-    public static void SwitchToRainwaterTank() {
+    public static void switchToRainwaterTank() {
         StreamObserver<RainwaterResponse> responseObserver = new StreamObserver<RainwaterResponse>() {
 
             public void onNext(RainwaterResponse msg) {
                 System.out.println("receiving TankId and level data ");
                 System.out.println("Recommendation based on incoming data: " + msg.getCurrentTankUsed());
                 String message = "Recommendation to switch to tankID " + msg.getCurrentTankUsed() + "\n";
-                textArea.append(message);
+                textArea.append("\n" + message);
 
                 // JOptionPane for testing response
-                //	JOptionPane.showMessageDialog(null, message);
+                // JOptionPane.showMessageDialog(null, message);
 
             }
 
@@ -164,7 +155,7 @@ public class Client3 extends JFrame {
 
             @Override
             public void onCompleted() {
-                System.out.println("Stream is completed ... receiving converted info");
+                System.out.println("Stream is completed ... receiving info");
 
             }
 
@@ -176,12 +167,8 @@ public class Client3 extends JFrame {
 
         for (int i = 0; i < 5; i++) {
             try {
-                requestObserver.onNext(RainwaterTank.newBuilder().setTankId(rand.nextInt(10)) // Random
-                        // number
-                        // between
-                        // 40 and
-                        // 100
-                        .setTankLevels(rand.nextInt(1000) + 1) // Random number between 1 and 1000
+                requestObserver.onNext(RainwaterTank.newBuilder().setTankId(rand.nextInt(10))
+                        .setTankLevels(rand.nextInt(1000) + 1)
                         .build());
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -196,4 +183,51 @@ public class Client3 extends JFrame {
 
     }
 
+    // unary rpc
+    public static void checkTankLevel() {
+
+        userInput = Integer.parseInt(userInputField.getText());
+        TankRequest req = TankRequest.newBuilder().setTankId(userInput).build();
+
+        // retrieving reply from service
+        TankResponse response = blockingStub.checkTankLevel(req);
+        int currentLevel = response.getTankLevel();
+        String message = "Current level for tank " + userInput + " is: " + currentLevel + " litres";
+
+        System.out.println("Server response: \n" + message);
+        textArea.append(message);
+    }
+
+    public static void monitorTankLevels() {
+        // Create a request for the monitorTankLevels() method.
+        MonitorLevels request = MonitorLevels.newBuilder().setTankId(1) // TODO: Replace this with the actual tank ID to
+                // monitor.
+                .build();
+
+        // Call the monitorTankLevels() method with the request and a StreamObserver to
+        // handle the responses.
+        asyncStub.monitorTankLevels(request, new StreamObserver<LevelsResponse>() {
+            public void onNext(LevelsResponse response) {
+                // Handle the response from the server.
+                int tankId = response.getTankId();
+                int currentLevel = response.getCurrentLevel();
+                System.out.println("Tank ID: " + tankId + ", Current Level: " + currentLevel);
+                String message = "Tank ID: " + tankId + ", Current Level: " + currentLevel;
+                textArea.append(message);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // Handle any errors that occur during the streaming RPC.
+                t.printStackTrace();
+            }
+
+            @Override
+            public void onCompleted() {
+                // Called when all responses have been received from the server.
+                System.out.println("Monitoring complete.");
+            }
+        });
+
+    }
 }

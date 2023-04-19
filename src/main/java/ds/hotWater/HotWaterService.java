@@ -11,12 +11,12 @@ import java.util.Random;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
-import ds.hotWater.*;
+import ds.hotWater.HotWaterServiceGrpc.HotWaterServiceImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
-public class HotWaterService extends HotWaterServiceGrpc.HotWaterServiceImplBase {
+public class HotWaterService extends HotWaterServiceImplBase {
 
     public static void main(String[] args) throws InterruptedException, IOException {
         HotWaterService hotwater = new HotWaterService();
@@ -70,6 +70,7 @@ public class HotWaterService extends HotWaterServiceGrpc.HotWaterServiceImplBase
         return prop;
     }
 
+
     private void registerService(Properties prop) {
 
         try {
@@ -78,10 +79,9 @@ public class HotWaterService extends HotWaterServiceGrpc.HotWaterServiceImplBase
 
             String service_type = prop.getProperty("service_type");// "_http._tcp.local.";
             String service_name = prop.getProperty("service_name");// "example";
-            // int service_port = 1234;
             int service_port = Integer.valueOf(prop.getProperty("service_port"));// #.50051;
 
-            String service_description_properties = prop.getProperty("service_description");// "path=index.html";
+            String service_description_properties = prop.getProperty("service_description");//
 
             // Register a service
             ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port,
@@ -120,12 +120,6 @@ public class HotWaterService extends HotWaterServiceGrpc.HotWaterServiceImplBase
         TankTempConfirm response = TankTempConfirm.newBuilder().setConfirmation(confirmation).build();
 
         responseObserver.onNext(response);
-
-        try {
-            Thread.sleep(5000); // wait for 5 seconds before shutting down the server
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         responseObserver.onCompleted();
     }
 
@@ -142,7 +136,7 @@ public class HotWaterService extends HotWaterServiceGrpc.HotWaterServiceImplBase
 
             @Override
             public void onNext(UsageDataRequest request) {
-                System.out.println("receiving hot water data values: " + "Water temp: " + request.getHotWaterTemp() + " Tank level: " + request.getTankLevel() + " Flow rate: " + request.getFlowRate() + " Water pressure: " + request.getWaterPressure());
+                System.out.println("receiving hot water data values: "+ "\n" + "Water temp: " + request.getHotWaterTemp() + "\n" + " Tank level: " + request.getTankLevel() + "\n" + " Flow rate: " + request.getFlowRate() + " Water pressure: " + request.getWaterPressure());
                 temp.add(request.getHotWaterTemp());
                 level.add(request.getTankLevel());
                 flow.add(request.getFlowRate());
@@ -164,34 +158,34 @@ public class HotWaterService extends HotWaterServiceGrpc.HotWaterServiceImplBase
 
                 for (int tempValue : temp) {
                     if (tempValue < 65) {
-                        message = "Check temperature! " + tempValue + "C recorded. ";
+                        message = "\n" + "Check temperature! " + tempValue + "C recorded. ";
                         break;
                     } else {
-                        message = "Water Temp OK. ";
+                        message ="\n" + "Water Temp OK. ";
                     }
                 }
                 for (int waterLevel : level) {
                     if (waterLevel < 600) {
-                        message2 = "Check tank level! " + waterLevel + " litres recorded. ";
+                        message2 = "\n"+ "Check tank level! " + waterLevel + " litres recorded. ";
                         break;
                     } else {
-                        message2 = "Tank Level OK. ";
+                        message2 ="\n" + "Tank Level OK. ";
                     }
                 }
                 for (int flowRate : flow) {
                     if (flowRate < 9) {
-                        message3 = "Check flow Rate! " + flowRate + " gpm recorded. ";
+                        message3 ="\n" + "Check flow Rate! " + flowRate + " gpm recorded. ";
                         break;
                     } else {
-                        message3 = "Flow Rate OK. ";
+                        message3 ="\n" + "Flow Rate OK. ";
                     }
                 }
                 for (int waterPressure : pressure) {
                     if (waterPressure < 40) {
-                        message4 = "Water pressure issue! " + waterPressure + " psi recorded. ";
+                        message4 ="\n" + "Water pressure issue! " + waterPressure + " psi recorded. ";
                         break;
                     } else {
-                        message4 = "Water Pressue OK. ";
+                        message4 ="\n" + "Water Pressue OK. ";
                     }
                 }
                 String result = message + message2 + message3 + message4;

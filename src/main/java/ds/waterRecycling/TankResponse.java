@@ -4,11 +4,11 @@
 package ds.waterRecycling;
 
 /**
- * Protobuf type {@code RecyclingService.TankResponse}
+ * Protobuf type {@code waterRecycling.TankResponse}
  */
 public  final class TankResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:RecyclingService.TankResponse)
+    // @@protoc_insertion_point(message_implements:waterRecycling.TankResponse)
     TankResponseOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use TankResponse.newBuilder() to construct.
@@ -69,13 +69,13 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_TankResponse_descriptor;
+    return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_TankResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_TankResponse_fieldAccessorTable
+    return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_TankResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             ds.waterRecycling.TankResponse.class, ds.waterRecycling.TankResponse.Builder.class);
   }
@@ -246,21 +246,21 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code RecyclingService.TankResponse}
+   * Protobuf type {@code waterRecycling.TankResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:RecyclingService.TankResponse)
+      // @@protoc_insertion_point(builder_implements:waterRecycling.TankResponse)
       ds.waterRecycling.TankResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_TankResponse_descriptor;
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_TankResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_TankResponse_fieldAccessorTable
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_TankResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ds.waterRecycling.TankResponse.class, ds.waterRecycling.TankResponse.Builder.class);
     }
@@ -291,7 +291,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_TankResponse_descriptor;
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_TankResponse_descriptor;
     }
 
     @java.lang.Override
@@ -430,10 +430,10 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:RecyclingService.TankResponse)
+    // @@protoc_insertion_point(builder_scope:waterRecycling.TankResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:RecyclingService.TankResponse)
+  // @@protoc_insertion_point(class_scope:waterRecycling.TankResponse)
   private static final ds.waterRecycling.TankResponse DEFAULT_INSTANCE;
   static {
     DEFAULT_INSTANCE = new ds.waterRecycling.TankResponse();

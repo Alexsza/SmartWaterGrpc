@@ -12,19 +12,15 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
 import ds.waterRecycling.*;
-import ds.hotWater.UsageDataRequest;
-import ds.hotWater.UsageDataResponse;
-import ds.hotWater.desiredTankTemp;
-import ds.waterMonitoring.*;
-import ds.waterMonitoring.MonitoringServiceGrpc.MonitoringServiceImplBase;
+import ds.waterRecycling.WaterRecyclingGrpc.WaterRecyclingImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
-public class RecyclingService extends MonitoringServiceImplBase {
+public class WaterRecycling extends WaterRecyclingImplBase {
 
-    public static void main(String[] args){
-        RecyclingService monitoring = new RecyclingService();
+    public static void main(String[] args) {
+        WaterRecycling monitoring = new WaterRecycling();
 
         Properties prop = monitoring.getProperties();
 
@@ -62,7 +58,7 @@ public class RecyclingService extends MonitoringServiceImplBase {
             prop.load(input);
 
             // get the property value and print it out
-            System.out.println("HotWater Service properies ...");
+            System.out.println("Water Recycling Service properies ...");
             System.out.println("\t service_type: " + prop.getProperty("service_type"));
             System.out.println("\t service_name: " + prop.getProperty("service_name"));
             System.out.println("\t service_description: " + prop.getProperty("service_description"));
@@ -85,7 +81,7 @@ public class RecyclingService extends MonitoringServiceImplBase {
             String service_name = prop.getProperty("service_name");// "Recycling_Service";
             int service_port = Integer.valueOf(prop.getProperty("service_port"));// #.50053;
 
-            String service_description_properties = prop.getProperty("service_description");// "path=index.html";
+            String service_description_properties = prop.getProperty("service_description");//
 
             // Register a service
             ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port,
@@ -110,100 +106,85 @@ public class RecyclingService extends MonitoringServiceImplBase {
     }
 
 
+    // implement unary rpc checkTankLevel method
     @Override
-    public StreamObserver<SensorDataRequest> sendSensorData(StreamObserver<SensorDataResponse> responseObserver) {
-        StreamObserver<SensorDataRequest> requestObserver = new StreamObserver<SensorDataRequest>() {
-            private int totalWaterUsage = 0;
-            private boolean waterLeakDetected = false;
+    public void checkTankLevel(TankRequest request, StreamObserver<TankResponse> responseObserver) {
 
-            @Override
-            public void onNext(SensorDataRequest request) {
-                int waterUsage = request.getWaterUsage();
-                totalWaterUsage += waterUsage;
-                String areaName = request.getAreaName();
-                System.out.println("Received data for area: " + areaName + ", water usage: " + waterUsage);
+        System.out.println("Executing Set Tank Temperature method ");
 
-                if (waterUsage > 100) {
-                    waterLeakDetected = true;
-                }
+        Random rand = new Random();
+        int currentLevel = rand.nextInt(1001); // generate random number for tank level between 1 & 1000
 
-                if (totalWaterUsage > 1000 || waterLeakDetected) {
-                    String alertMessage = "Possible water leak detected in area " + areaName;
-                    String recommendationMessage = "Please inspect the area manually";
-                    SensorDataResponse response = SensorDataResponse.newBuilder()
-                            .setAlert(alertMessage)
-                            .setRecommendation(recommendationMessage)
-                            .build();
-                    responseObserver.onNext(response);
-                }
-            }
+        int tankID = request.getTankId();
 
-            @Override
-            public void onError(Throwable t) {
-                System.err.println("Sensor data stream error: " + t.getMessage());
-            }
+        // Code to set the tank temperature to the desired temperature
+        String confirmation = "TankID " + tankID + " current level is: " + currentLevel + " litres ";
+        System.out.println(confirmation);
 
-            @Override
-            public void onCompleted() {
-                System.out.println("Sensor data stream completed");
-                responseObserver.onCompleted();
-            }
-        };
-        responseObserver.onNext(SensorDataResponse.newBuilder().build());
+        TankResponse response = TankResponse.newBuilder().setTankLevel(currentLevel).build();
+
+        responseObserver.onNext(response);
         responseObserver.onCompleted();
-        return requestObserver;
     }
 
-/*
 
-public void setTankTemperature(desiredTankTemp request, StreamObserver<TankTempConfirm> responseObserver) {
+    //implement Server-side streaming monitorTankLevels method
 
-	System.out.println("receiving Set Tank Temperature method " + request.getDesiredTemp());
+    @Override
+    public void monitorTankLevels(MonitorLevels request, StreamObserver<LevelsResponse> responseObserver) {
+        int tankId = request.getTankId();
+        // create random numbers for input
+        Random rand = new Random();
+        // TODO: Implement the logic to monitor the tank levels for the given tankId.
 
-	Random rand = new Random();
-	int currentTemp = rand.nextInt(101);
-
-	int newTemp = request.getDesiredTemp();
-
-	// Code to set the tank temperature to the desired temperature
-	String confirmation = "Tank temperature is now setting to " + newTemp + " from " + currentTemp;
-
-	TankTempConfirm response = TankTempConfirm.newBuilder().setConfirmation(confirmation).build();
-
-	responseObserver.onNext(response);
-
-	try {
-		Thread.sleep(5000); // wait for 5 seconds before shutting down the server
-	} catch (InterruptedException e) {
-		Thread.currentThread().interrupt();
-	}
-	responseObserver.onCompleted();
-}
-*/
+        // Send multiple responses to the client using the responseObserver.
+        for (int i = 0; i < 5; i++) {
+            try {
+                LevelsResponse response = LevelsResponse.newBuilder().setTankId(tankId).setCurrentLevel(rand.nextInt(1000) + 1)
+                        .build();
+                responseObserver.onNext(response);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
+        }
+        // Once all the responses have been sent, call completed
+        responseObserver.onCompleted();
+    }
 
 
-    public StreamObserver<RainwaterTank> SwitchToRainwaterTank(StreamObserver<RainwaterResponse> responseObserver) {
+
+
+    //implement Client-side streaming switchToRainwaterTank method
+    public StreamObserver<RainwaterTank> switchToRainwaterTank(StreamObserver<RainwaterResponse> responseObserver) {
         return new StreamObserver<RainwaterTank>() {
+
+
             ArrayList<Integer> tankID = new ArrayList<Integer>();
             ArrayList<Integer> tankLevel = new ArrayList<Integer>();
 
+            @Override
+            public void onNext(RainwaterTank rainwaterTank) {
+                System.out.println("Executing Switch to Rainwater Tank method ");
 
-            public void onNext(RainwaterTank request) {
-                System.out.println("receiving Rainwater tank values: " + "Tank ID: " + request.getTankId() + " Tank level: " + request.getTankLevels());
-                tankID.add(request.getTankId());
-                tankLevel.add(request.getTankLevels());
+                int id = rainwaterTank.getTankId();
+                int level = rainwaterTank.getTankLevels();
+
+                System.out.println("receiving Rainwater tank values: " + "Tank ID: " + rainwaterTank.getTankId()
+                        + " Tank level: " + rainwaterTank.getTankLevels());
+                tankID.add(id);
+                tankLevel.add(level);
             }
 
             @Override
             public void onError(Throwable t) {
-                // TODO Auto-generated method stub
+                System.err.println("Switch to rainwater tank error: " + t.getMessage());
             }
 
             @Override
             public void onCompleted() {
                 System.out.println("receiving Hot Water data method complete");
                 String message = "";
-                String message2 = "";
+                String message2;
                 int highestLevel = 0;
                 int currentTankUsed = 0;
 
@@ -232,5 +213,4 @@ public void setTankTemperature(desiredTankTemp request, StreamObserver<TankTempC
             }
         };
     }
-
 }

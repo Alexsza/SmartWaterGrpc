@@ -3,41 +3,23 @@ package ds.hotWater;
 import java.awt.Dimension;
 
 import javax.jmdns.JmDNS;
-import javax.jmdns.NetworkTopologyDiscovery;
-import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
 import javax.swing.*;
 
-import java.awt.EventQueue;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 
-
-import ds.hotWater.*;
-
+import ds.hotWater.HotWaterServiceGrpc.HotWaterServiceBlockingStub;
+import ds.hotWater.HotWaterServiceGrpc.HotWaterServiceStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 
@@ -133,7 +115,7 @@ public class Client extends JFrame {
         TankTempConfirm response = blockingStub.setTankTemperature(req);
 
         System.out.println("Server response: " + response.getConfirmation());
-        textArea.append("Tank temperature set to " + response.getConfirmation() + "\n");
+        textArea.append(response.getConfirmation() + "\n");
 
 
         //	JOptionPane to test response
@@ -147,7 +129,7 @@ public class Client extends JFrame {
             public void onNext(UsageDataResponse msg) {
                 System.out.println("receiving hot water data ");
                 System.out.println("Recommendation based on incoming data: " + msg.getRecommendation());
-                String message = "Recommendation based on incoming data:\n" + msg.getRecommendation() + "\n";
+                String message = "Recommendation based on incoming data:\n" + msg.getRecommendation();
                 textArea.append(message);
 
                 // JOptionPane for testing response
@@ -174,14 +156,10 @@ public class Client extends JFrame {
 
         for (int i = 0; i < 5; i++) {
             try {
-                requestObserver.onNext(UsageDataRequest.newBuilder().setHotWaterTemp(rand.nextInt(60) + 40) // Random
-                        // number
-                        // between
-                        // 40 and
-                        // 100
-                        .setTankLevel(rand.nextInt(700) + 300) // Random number between 300 and 1000
-                        .setFlowRate(rand.nextInt(10) + 5) // Random number between 5 and 15
-                        .setWaterPressure(rand.nextInt(30) + 20) // Random number between 30 and 50
+                requestObserver.onNext(UsageDataRequest.newBuilder().setHotWaterTemp(rand.nextInt(60) + 40)
+                        .setTankLevel(rand.nextInt(700) + 300)
+                        .setFlowRate(rand.nextInt(10) + 5)
+                        .setWaterPressure(rand.nextInt(30) + 20)
                         .build());
                 Thread.sleep(500);
             } catch (InterruptedException e) {

@@ -4,11 +4,11 @@
 package ds.waterRecycling;
 
 /**
- * Protobuf type {@code RecyclingService.RainwaterResponse}
+ * Protobuf type {@code waterRecycling.RainwaterResponse}
  */
 public  final class RainwaterResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:RecyclingService.RainwaterResponse)
+    // @@protoc_insertion_point(message_implements:waterRecycling.RainwaterResponse)
     RainwaterResponseOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use RainwaterResponse.newBuilder() to construct.
@@ -69,13 +69,13 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_RainwaterResponse_descriptor;
+    return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_RainwaterResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_RainwaterResponse_fieldAccessorTable
+    return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_RainwaterResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             ds.waterRecycling.RainwaterResponse.class, ds.waterRecycling.RainwaterResponse.Builder.class);
   }
@@ -246,21 +246,21 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code RecyclingService.RainwaterResponse}
+   * Protobuf type {@code waterRecycling.RainwaterResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:RecyclingService.RainwaterResponse)
+      // @@protoc_insertion_point(builder_implements:waterRecycling.RainwaterResponse)
       ds.waterRecycling.RainwaterResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_RainwaterResponse_descriptor;
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_RainwaterResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_RainwaterResponse_fieldAccessorTable
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_RainwaterResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ds.waterRecycling.RainwaterResponse.class, ds.waterRecycling.RainwaterResponse.Builder.class);
     }
@@ -291,7 +291,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_RainwaterResponse_descriptor;
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_RainwaterResponse_descriptor;
     }
 
     @java.lang.Override
@@ -430,10 +430,10 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:RecyclingService.RainwaterResponse)
+    // @@protoc_insertion_point(builder_scope:waterRecycling.RainwaterResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:RecyclingService.RainwaterResponse)
+  // @@protoc_insertion_point(class_scope:waterRecycling.RainwaterResponse)
   private static final ds.waterRecycling.RainwaterResponse DEFAULT_INSTANCE;
   static {
     DEFAULT_INSTANCE = new ds.waterRecycling.RainwaterResponse();

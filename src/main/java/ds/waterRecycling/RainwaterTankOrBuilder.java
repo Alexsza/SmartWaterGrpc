@@ -4,7 +4,7 @@
 package ds.waterRecycling;
 
 public interface RainwaterTankOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:RecyclingService.RainwaterTank)
+    // @@protoc_insertion_point(interface_extends:waterRecycling.RainwaterTank)
     com.google.protobuf.MessageOrBuilder {
 
   /**

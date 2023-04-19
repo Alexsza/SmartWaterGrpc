@@ -4,7 +4,7 @@
 package ds.waterRecycling;
 
 public interface LevelsResponseOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:RecyclingService.LevelsResponse)
+    // @@protoc_insertion_point(interface_extends:waterRecycling.LevelsResponse)
     com.google.protobuf.MessageOrBuilder {
 
   /**

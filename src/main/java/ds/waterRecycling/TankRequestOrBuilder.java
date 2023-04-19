@@ -4,7 +4,7 @@
 package ds.waterRecycling;
 
 public interface TankRequestOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:RecyclingService.TankRequest)
+    // @@protoc_insertion_point(interface_extends:waterRecycling.TankRequest)
     com.google.protobuf.MessageOrBuilder {
 
   /**

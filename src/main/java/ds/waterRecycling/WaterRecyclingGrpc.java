@@ -27,7 +27,7 @@ public final class WaterRecyclingGrpc {
 
   private WaterRecyclingGrpc() {}
 
-  public static final String SERVICE_NAME = "RecyclingService.WaterRecycling";
+  public static final String SERVICE_NAME = "waterRecycling.WaterRecycling";
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<ds.waterRecycling.TankRequest,
@@ -48,7 +48,7 @@ public final class WaterRecyclingGrpc {
               io.grpc.MethodDescriptor.<ds.waterRecycling.TankRequest, ds.waterRecycling.TankResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
-                  "RecyclingService.WaterRecycling", "CheckTankLevel"))
+                  "waterRecycling.WaterRecycling", "CheckTankLevel"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   ds.waterRecycling.TankRequest.getDefaultInstance()))
@@ -80,7 +80,7 @@ public final class WaterRecyclingGrpc {
               io.grpc.MethodDescriptor.<ds.waterRecycling.MonitorLevels, ds.waterRecycling.LevelsResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
               .setFullMethodName(generateFullMethodName(
-                  "RecyclingService.WaterRecycling", "MonitorTankLevels"))
+                  "waterRecycling.WaterRecycling", "MonitorTankLevels"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   ds.waterRecycling.MonitorLevels.getDefaultInstance()))
@@ -112,7 +112,7 @@ public final class WaterRecyclingGrpc {
               io.grpc.MethodDescriptor.<ds.waterRecycling.RainwaterTank, ds.waterRecycling.RainwaterResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
               .setFullMethodName(generateFullMethodName(
-                  "RecyclingService.WaterRecycling", "SwitchToRainwaterTank"))
+                  "waterRecycling.WaterRecycling", "SwitchToRainwaterTank"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   ds.waterRecycling.RainwaterTank.getDefaultInstance()))

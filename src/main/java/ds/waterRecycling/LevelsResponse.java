@@ -4,11 +4,11 @@
 package ds.waterRecycling;
 
 /**
- * Protobuf type {@code RecyclingService.LevelsResponse}
+ * Protobuf type {@code waterRecycling.LevelsResponse}
  */
 public  final class LevelsResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:RecyclingService.LevelsResponse)
+    // @@protoc_insertion_point(message_implements:waterRecycling.LevelsResponse)
     LevelsResponseOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use LevelsResponse.newBuilder() to construct.
@@ -75,13 +75,13 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_LevelsResponse_descriptor;
+    return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_LevelsResponse_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_LevelsResponse_fieldAccessorTable
+    return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_LevelsResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             ds.waterRecycling.LevelsResponse.class, ds.waterRecycling.LevelsResponse.Builder.class);
   }
@@ -272,21 +272,21 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code RecyclingService.LevelsResponse}
+   * Protobuf type {@code waterRecycling.LevelsResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:RecyclingService.LevelsResponse)
+      // @@protoc_insertion_point(builder_implements:waterRecycling.LevelsResponse)
       ds.waterRecycling.LevelsResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_LevelsResponse_descriptor;
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_LevelsResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_LevelsResponse_fieldAccessorTable
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_LevelsResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ds.waterRecycling.LevelsResponse.class, ds.waterRecycling.LevelsResponse.Builder.class);
     }
@@ -319,7 +319,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return ds.waterRecycling.WaterRecyclingImpl.internal_static_RecyclingService_LevelsResponse_descriptor;
+      return ds.waterRecycling.WaterRecyclingImpl.internal_static_waterRecycling_LevelsResponse_descriptor;
     }
 
     @java.lang.Override
@@ -488,10 +488,10 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:RecyclingService.LevelsResponse)
+    // @@protoc_insertion_point(builder_scope:waterRecycling.LevelsResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:RecyclingService.LevelsResponse)
+  // @@protoc_insertion_point(class_scope:waterRecycling.LevelsResponse)
   private static final ds.waterRecycling.LevelsResponse DEFAULT_INSTANCE;
   static {
     DEFAULT_INSTANCE = new ds.waterRecycling.LevelsResponse();

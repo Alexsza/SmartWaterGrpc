@@ -80,7 +80,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
 
             String service_type = prop.getProperty("service_type");// "_waterMonitoring._tcp.local";
             String service_name = prop.getProperty("service_name");// "MonitoringService";
-            int service_port = Integer.valueOf(prop.getProperty("service_port"));// #.50052;
+            int service_port = Integer.parseInt(prop.getProperty("service_port"));// #.50052;
 
             String service_description_properties = prop.getProperty("service_description");//
 
@@ -121,7 +121,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
         for (int i = 0; i < 5; i++) {
             try {
                 int usage = rand.nextInt(1000) + 1;
-                String issue = "";
+                String issue;
                 if(usage < 10) {
                     issue = "Tank is not currently used, possible blockage in area: " + areaName;
                 }else if(usage >950) {
@@ -156,7 +156,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
                 String areaName = request.getAreaName();
                 System.out.println("Received data for area: " + areaName + ", water usage: " + waterUsage);
                 String alertMessage = "";
-                String recommendationMessage = "";
+                String recommendationMessage;
                 if (waterUsage > 950) {
                     alertMessage = "Possible water leak detected in area " + areaName + " water usage "
                             + waterUsage + " recorded. " + "\n";

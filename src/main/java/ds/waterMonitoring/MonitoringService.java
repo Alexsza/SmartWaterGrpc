@@ -1,32 +1,30 @@
 package ds.waterMonitoring;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Random;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
-
-import ds.waterMonitoring.*;
 import ds.waterMonitoring.MonitoringServiceGrpc.MonitoringServiceImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.util.Random;
+
 public class MonitoringService extends MonitoringServiceImplBase {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         MonitoringService monitoring = new MonitoringService();
 
         Properties prop = monitoring.getProperties();
 
         monitoring.registerService(prop);
 
-        int port = Integer.valueOf(prop.getProperty("service_port")); // #50052
+        int port = Integer.parseInt(prop.getProperty("service_port")); // #50052
 
         try {
 
@@ -37,10 +35,12 @@ public class MonitoringService extends MonitoringServiceImplBase {
             server.awaitTermination();
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            // Auto-generated catch block
+            System.out.println("Error 1");
             e.printStackTrace();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+            // Auto-generated catch block
+            System.out.println("Error 2");
             e.printStackTrace();
         }
 
@@ -50,7 +50,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
 
         Properties prop = null;
 
-        try (InputStream input = new FileInputStream("src/main/resources/monitoring.properties")) {
+        try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/monitoring.properties"))) {
 
             prop = new Properties();
 
@@ -58,13 +58,14 @@ public class MonitoringService extends MonitoringServiceImplBase {
             prop.load(input);
 
             // get the property value and print it out
-            System.out.println("HotWater Service properies ...");
+            System.out.println("Current Service properies");
             System.out.println("\t service_type: " + prop.getProperty("service_type"));
             System.out.println("\t service_name: " + prop.getProperty("service_name"));
             System.out.println("\t service_description: " + prop.getProperty("service_description"));
             System.out.println("\t service_port: " + prop.getProperty("service_port"));
 
         } catch (IOException ex) {
+            System.out.println("Error 3");
             ex.printStackTrace();
         }
 
@@ -81,7 +82,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
             String service_name = prop.getProperty("service_name");// "MonitoringService";
             int service_port = Integer.valueOf(prop.getProperty("service_port"));// #.50052;
 
-            String service_description_properties = prop.getProperty("service_description");// "path=index.html";
+            String service_description_properties = prop.getProperty("service_description");//
 
             // Register a service
             ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port,
@@ -97,66 +98,80 @@ public class MonitoringService extends MonitoringServiceImplBase {
             // jmdns.unregisterAllServices();
 
         } catch (IOException e) {
+            System.out.println("Error 4");
             System.out.println(e.getMessage());
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+            // Auto-generated catch block
+            System.out.println("Error 5");
             e.printStackTrace();
         }
 
     }
-/*
-	public void MonitorArea(AreaRequest request, StreamObserver<AreaResponse> responseObserver) {
 
-		System.out.println("receiving Set Tank Temperature method " + request.getDesiredTemp());
-
-		Random rand = new Random();
-		int currentTemp = rand.nextInt(101);
-
-		String newArea = request.getAreaName();
-
-		// Code to set the tank temperature to the desired temperature
-		String confirmation = "Tank temperature is now setting to " + newArea + " from " + currentTemp;
-
-		TankTempConfirm response = TankTempConfirm.newBuilder().setConfirmation(confirmation).build();
-
-		responseObserver.onNext(response);
-
-		try {
-			Thread.sleep(5000); // wait for 5 seconds before shutting down the server
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		responseObserver.onCompleted();
-	}
-*/
+    @Override
+    public void monitorArea(AreaRequest request, StreamObserver<AreaResponse> responseObserver) {
+        System.out.println("Monitor Area started ");
+        // Extract the area name from the request+
+        String areaName = request.getAreaName();
+        System.out.println("Receiving AreaName " + areaName);
+        // Implement the logic to monitor the water usage in the specified area
+        Random rand = new Random();
+        // Monitor the tank levels for the given tankId.
+        // Send multiple responses to the client using the responseObserver.
+        for (int i = 0; i < 5; i++) {
+            try {
+                int usage = rand.nextInt(1000) + 1;
+                String issue = "";
+                if(usage < 10) {
+                    issue = "Tank is not currently used, possible blockage in area: " + areaName;
+                }else if(usage >950) {
+                    issue = "Current usage level indicates water is running contiusouly in area: " + areaName;
+                }else if(usage >750) {
+                    issue = "Current usage is higher than normal, monitor area: " + areaName;
+                }else {
+                    issue = "Normal levels observed";
+                }
+                AreaResponse response = AreaResponse.newBuilder().setWaterUsage(usage).setIssues(issue)
+                        .build();
+                responseObserver.onNext(response);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
+        }
+        // Once all the responses have been sent, call completed
+        responseObserver.onCompleted();
+        System.out.println("Monitor Area is now completed.");
+    }
 
 
     @Override
     public StreamObserver<SensorDataRequest> sendSensorData(StreamObserver<SensorDataResponse> responseObserver) {
-        StreamObserver<SensorDataRequest> requestObserver = new StreamObserver<SensorDataRequest>() {
-            private int totalWaterUsage = 0;
-            private boolean waterLeakDetected = false;
+
+        return new StreamObserver<SensorDataRequest>() {
+
 
             @Override
             public void onNext(SensorDataRequest request) {
                 int waterUsage = request.getWaterUsage();
-                totalWaterUsage += waterUsage;
                 String areaName = request.getAreaName();
                 System.out.println("Received data for area: " + areaName + ", water usage: " + waterUsage);
+                String alertMessage = "";
+                String recommendationMessage = "";
+                if (waterUsage > 950) {
+                    alertMessage = "Possible water leak detected in area " + areaName + " water usage "
+                            + waterUsage + " recorded. " + "\n";
+                    recommendationMessage = "Check for open taps or continous water flow";
 
-                if (waterUsage > 100) {
-                    waterLeakDetected = true;
+                } else if (waterUsage > 800) {
+                    alertMessage = "Unusual high water usage in " + areaName + " water usage " + waterUsage
+                            + " recorded. " + "\n";
+                    recommendationMessage = "Please inspect the area visually to detect source of leak";
+                }else {
+                    recommendationMessage = "All good. ";
                 }
-
-                if (totalWaterUsage > 1000 || waterLeakDetected) {
-                    String alertMessage = "Possible water leak detected in area " + areaName;
-                    String recommendationMessage = "Please inspect the area manually";
-                    SensorDataResponse response = SensorDataResponse.newBuilder()
-                            .setAlert(alertMessage)
-                            .setRecommendation(recommendationMessage)
-                            .build();
-                    responseObserver.onNext(response);
-                }
+                SensorDataResponse response = SensorDataResponse.newBuilder().setAlert(alertMessage)
+                        .setRecommendation(recommendationMessage).build();
+                responseObserver.onNext(response);
             }
 
             @Override
@@ -170,8 +185,5 @@ public class MonitoringService extends MonitoringServiceImplBase {
                 responseObserver.onCompleted();
             }
         };
-        responseObserver.onNext(SensorDataResponse.newBuilder().build());
-        responseObserver.onCompleted();
-        return requestObserver;
     }
 }

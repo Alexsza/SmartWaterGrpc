@@ -3,6 +3,7 @@ package ds.waterMonitoring;
 import java.awt.Dimension;
 import java.net.InetAddress;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
@@ -96,6 +97,15 @@ public class Client2 extends JFrame {
 
         // new instance of the class to create and display the GUI
         new Client2();
+
+        //Timeout
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     private void MonitorArea() {

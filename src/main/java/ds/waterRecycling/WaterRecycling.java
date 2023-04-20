@@ -1,21 +1,20 @@
 package ds.waterRecycling;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Random;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
-
-import ds.waterRecycling.*;
 import ds.waterRecycling.WaterRecyclingGrpc.WaterRecyclingImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
+
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Random;
 
 public class WaterRecycling extends WaterRecyclingImplBase {
 
@@ -26,7 +25,7 @@ public class WaterRecycling extends WaterRecyclingImplBase {
 
         monitoring.registerService(prop);
 
-        int port = Integer.valueOf(prop.getProperty("service_port")); // #50053
+        int port = Integer.parseInt(prop.getProperty("service_port")); // #50053
 
         try {
 
@@ -36,11 +35,7 @@ public class WaterRecycling extends WaterRecyclingImplBase {
 
             server.awaitTermination();
 
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -50,7 +45,7 @@ public class WaterRecycling extends WaterRecyclingImplBase {
 
         Properties prop = null;
 
-        try (InputStream input = new FileInputStream("src/main/resources/recycling.properties")) {
+        try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/recycling.properties"))) {
 
             prop = new Properties();
 
@@ -58,7 +53,7 @@ public class WaterRecycling extends WaterRecyclingImplBase {
             prop.load(input);
 
             // get the property value and print it out
-            System.out.println("Water Recycling Service properies ...");
+            System.out.println("Current Service properties ...");
             System.out.println("\t service_type: " + prop.getProperty("service_type"));
             System.out.println("\t service_name: " + prop.getProperty("service_name"));
             System.out.println("\t service_description: " + prop.getProperty("service_description"));
@@ -79,7 +74,7 @@ public class WaterRecycling extends WaterRecyclingImplBase {
 
             String service_type = prop.getProperty("service_type");// "_waterRecycling._tcp.local.";
             String service_name = prop.getProperty("service_name");// "Recycling_Service";
-            int service_port = Integer.valueOf(prop.getProperty("service_port"));// #.50053;
+            int service_port = Integer.parseInt(prop.getProperty("service_port"));// #.50053;
 
             String service_description_properties = prop.getProperty("service_description");//
 
@@ -99,18 +94,16 @@ public class WaterRecycling extends WaterRecyclingImplBase {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
     }
 
-
     // implement unary rpc checkTankLevel method
     @Override
     public void checkTankLevel(TankRequest request, StreamObserver<TankResponse> responseObserver) {
 
-        System.out.println("Executing Set Tank Temperature method ");
+        System.out.println("Executing Set Tank Temperature method. ");
 
         Random rand = new Random();
         int currentLevel = rand.nextInt(1001); // generate random number for tank level between 1 & 1000
@@ -125,23 +118,25 @@ public class WaterRecycling extends WaterRecyclingImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+        System.out.println("Set Tank Temperature method completed.");
     }
 
-
-    //implement Server-side streaming monitorTankLevels method
+    // implement Server-side streaming monitorTankLevels method
 
     @Override
     public void monitorTankLevels(MonitorLevels request, StreamObserver<LevelsResponse> responseObserver) {
+        System.out.println("Executing Monitor Tank Levels method ");
         int tankId = request.getTankId();
+        System.out.println("Received tankId: " + tankId);
         // create random numbers for input
         Random rand = new Random();
-        // TODO: Implement the logic to monitor the tank levels for the given tankId.
+        // Monitor the tank levels for the given tankId.
 
         // Send multiple responses to the client using the responseObserver.
         for (int i = 0; i < 5; i++) {
             try {
-                LevelsResponse response = LevelsResponse.newBuilder().setTankId(tankId).setCurrentLevel(rand.nextInt(1000) + 1)
-                        .build();
+                LevelsResponse response = LevelsResponse.newBuilder().setTankId(tankId)
+                        .setCurrentLevel(rand.nextInt(1000) + 1).build();
                 responseObserver.onNext(response);
             } catch (RuntimeException e) {
                 e.printStackTrace();
@@ -149,27 +144,23 @@ public class WaterRecycling extends WaterRecyclingImplBase {
         }
         // Once all the responses have been sent, call completed
         responseObserver.onCompleted();
+        System.out.println("Monitor Tank Levels method completed. ");
     }
 
-
-
-
-    //implement Client-side streaming switchToRainwaterTank method
+    // implement Client-side streaming switchToRainwaterTank method
     public StreamObserver<RainwaterTank> switchToRainwaterTank(StreamObserver<RainwaterResponse> responseObserver) {
         return new StreamObserver<RainwaterTank>() {
 
-
-            ArrayList<Integer> tankID = new ArrayList<Integer>();
-            ArrayList<Integer> tankLevel = new ArrayList<Integer>();
+            final ArrayList<Integer> tankID = new ArrayList<>();
+            final ArrayList<Integer> tankLevel = new ArrayList<>();
 
             @Override
             public void onNext(RainwaterTank rainwaterTank) {
-                System.out.println("Executing Switch to Rainwater Tank method ");
 
                 int id = rainwaterTank.getTankId();
                 int level = rainwaterTank.getTankLevels();
 
-                System.out.println("receiving Rainwater tank values: " + "Tank ID: " + rainwaterTank.getTankId()
+                System.out.println("Checking Rainwater tank values: " + "Tank ID: " + rainwaterTank.getTankId()
                         + " Tank level: " + rainwaterTank.getTankLevels());
                 tankID.add(id);
                 tankLevel.add(level);
@@ -182,7 +173,7 @@ public class WaterRecycling extends WaterRecyclingImplBase {
 
             @Override
             public void onCompleted() {
-                System.out.println("receiving Hot Water data method complete");
+                System.out.println("Receiving data complete");
                 String message = "";
                 String message2;
                 int highestLevel = 0;
@@ -209,7 +200,10 @@ public class WaterRecycling extends WaterRecyclingImplBase {
                 System.out.println(message + message2);
                 RainwaterResponse reply = RainwaterResponse.newBuilder().setCurrentTankUsed(currentTankUsed).build();
                 responseObserver.onNext(reply);
+
+                //complete
                 responseObserver.onCompleted();
+                System.out.println("Switch Rainwater tank method completed");
             }
         };
     }

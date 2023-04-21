@@ -1,13 +1,16 @@
 package GUI;
 
 import ds.hotWater.*;
+import ds.hotWater.HotWaterServiceGrpc.HotWaterServiceBlockingStub;
 import ds.waterMonitoring.*;
 import ds.waterMonitoring.MonitoringServiceGrpc.MonitoringServiceStub;
 import ds.waterRecycling.*;
 import ds.waterRecycling.WaterRecyclingGrpc.WaterRecyclingBlockingStub;
 import ds.waterRecycling.WaterRecyclingGrpc.WaterRecyclingStub;
+import io.grpc.Deadline;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import javax.jmdns.JmDNS;
@@ -31,7 +34,7 @@ public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private static String SERVICE_HOST;
     private static int SERVICE_PORT;
-    private static HotWaterServiceGrpc.HotWaterServiceBlockingStub blockingStub;
+    private static HotWaterServiceBlockingStub blockingStub;
     private static HotWaterServiceGrpc.HotWaterServiceStub asyncStub;
     private static MonitoringServiceStub asyncStub2;
     private static WaterRecyclingBlockingStub blockingStub3;
@@ -185,6 +188,7 @@ public class GUI extends JFrame {
         Service serviceHost = connectToServer();
         // String serviceType = getServiceType(port);
         ManagedChannel channel = ManagedChannelBuilder.forAddress(SERVICE_HOST, SERVICE_PORT).usePlaintext().build();
+        System.out.println("line after managed channel port " + SERVICE_PORT + " host: " + SERVICE_HOST);
 
         // stubs -- generate from proto file
         blockingStub = HotWaterServiceGrpc.newBlockingStub(channel);
@@ -397,8 +401,22 @@ public class GUI extends JFrame {
         userInput = Integer.parseInt(userInputField.getText());
         TankRequest req = TankRequest.newBuilder().setTankId(userInput).build();
 
-        // retrieving reply from service
-        TankResponse response = blockingStub3.checkTankLevel(req);
+        // Set the timeout for the RPC to 2 seconds
+        Deadline deadline = Deadline.after(2, TimeUnit.SECONDS);
+
+        // Create a new blocking stub with the timeout set
+        WaterRecyclingBlockingStub stubWithDeadline =
+                blockingStub3.withDeadline(deadline);
+
+        // Retrieve the reply from the service
+        TankResponse response;
+        try {
+            response = stubWithDeadline.checkTankLevel(req);
+        } catch (StatusRuntimeException e) {
+            System.err.println("RPC failed: " + e.getStatus());
+            return;
+        }
+
         int currentLevel = response.getTankLevel();
         String message = "\n" + "Current level for tank " + userInput + " is: " + currentLevel + " litres";
 
@@ -407,6 +425,7 @@ public class GUI extends JFrame {
         System.out.println("Check Tank Level method response received & finished. ");
 
     }
+
 
     public static void monitorTankLevels() {
         System.out.println("Calling Monitor Tank Level method ");

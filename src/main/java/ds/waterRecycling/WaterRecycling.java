@@ -114,6 +114,14 @@ public class WaterRecycling extends WaterRecyclingImplBase {
         String confirmation = "TankID " + tankID + " current level is: " + currentLevel + " litres ";
         System.out.println(confirmation);
 
+        // Add a sleep to simulate a long-running process
+        try {
+            Thread.sleep(1000); // Sleep for 1 seconds
+            //    Thread.sleep(3000); // Sleep for 3 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         TankResponse response = TankResponse.newBuilder().setTankLevel(currentLevel).build();
 
         responseObserver.onNext(response);

@@ -24,6 +24,10 @@ public class GUI extends JFrame {
 
     private static Service serviceHost;
 
+    public GUI(Service serviceHost) {
+        GUI.serviceHost = serviceHost;
+    }
+
     private static final long serialVersionUID = 1L;
     private static String SERVICE_HOST;
     private static int SERVICE_PORT;
@@ -38,6 +42,7 @@ public class GUI extends JFrame {
 
     // GUI components for the Services
     private static JTextField userInputField;
+    private static JTextField userInputfield;
     private static JTextArea textArea;
     private static JTextField userInputField2;
 
@@ -77,7 +82,6 @@ public class GUI extends JFrame {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             setVisible(true);
-
 
         } else if (servicePort == 50052) {
             // Create the GUI components for the Water Monitoring Service
@@ -178,11 +182,11 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args) throws Exception {
+        Service serviceHost = connectToServer();
         // String serviceType = getServiceType(port);
         ManagedChannel channel = ManagedChannelBuilder.forAddress(SERVICE_HOST, SERVICE_PORT).usePlaintext().build();
-        System.out.println("line after managed channel port " + SERVICE_PORT + " host: " + SERVICE_HOST);
 
-        /* stubs -- generate from proto file */
+        // stubs -- generate from proto file
         blockingStub = HotWaterServiceGrpc.newBlockingStub(channel);
         asyncStub = HotWaterServiceGrpc.newStub(channel);
         asyncStub2 = MonitoringServiceGrpc.newStub(channel);
@@ -192,16 +196,21 @@ public class GUI extends JFrame {
         new GUI(port);
 
         // Timeout
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                channel.shutdown().awaitTermination(7, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    channel.shutdown().awaitTermination(7, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }));
+        });
 
         try {
+            return;
         } catch (Exception e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -275,10 +284,6 @@ public class GUI extends JFrame {
         requestObserver.onCompleted();
         System.out.println("Hot water data stream to server complete ");
 
-    }
-
-    public static void setServiceHost(Service serviceHost) {
-        GUI.serviceHost = serviceHost;
     }
 
     // Water Monitoring Services

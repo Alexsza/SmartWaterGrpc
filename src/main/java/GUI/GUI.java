@@ -277,6 +277,10 @@ public class GUI extends JFrame {
 
     }
 
+    public static void setServiceHost(Service serviceHost) {
+        GUI.serviceHost = serviceHost;
+    }
+
     // Water Monitoring Services
     private void MonitorArea() {
         System.out.println("Monitor Area commenced.");

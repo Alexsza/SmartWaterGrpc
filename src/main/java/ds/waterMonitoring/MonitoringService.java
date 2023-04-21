@@ -16,16 +16,17 @@ import java.util.Properties;
 import java.util.Random;
 
 public class MonitoringService extends MonitoringServiceImplBase {
-
+    //main method
     public static void main(String[] args) {
+        //create new object of the class
         MonitoringService monitoring = new MonitoringService();
 
         Properties prop = monitoring.getProperties();
 
         monitoring.registerService(prop);
-
+        //Access point to the service is represented by port variables.
         int port = Integer.parseInt(prop.getProperty("service_port")); // #50052
-
+        //build server
         try {
 
             Server server = ServerBuilder.forPort(port).addService(monitoring).build().start();
@@ -33,13 +34,11 @@ public class MonitoringService extends MonitoringServiceImplBase {
             System.out.println("Water Monitoring server started, listening on " + port);
 
             server.awaitTermination();
-
+        //Exception handling
         } catch (IOException e) {
-            // Auto-generated catch block
             System.out.println("Error 1");
             e.printStackTrace();
         } catch (InterruptedException e) {
-            // Auto-generated catch block
             System.out.println("Error 2");
             e.printStackTrace();
         }
@@ -49,7 +48,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
     private Properties getProperties() {
 
         Properties prop = null;
-
+        //receive connection properties from designated path
         try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/monitoring.properties"))) {
 
             prop = new Properties();
@@ -64,6 +63,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
             System.out.println("\t service_description: " + prop.getProperty("service_description"));
             System.out.println("\t service_port: " + prop.getProperty("service_port"));
 
+            //exception handling Input/Output
         } catch (IOException ex) {
             System.out.println("Error 3");
             ex.printStackTrace();
@@ -71,7 +71,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
 
         return prop;
     }
-
+    //method to register a service
     private void registerService(Properties prop) {
 
         try {
@@ -88,7 +88,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
             ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port,
                     service_description_properties);
             jmdns.registerService(serviceInfo);
-
+            //confirm on console
             System.out.printf("registrering service with type %s and name %s \n", service_type, service_name);
 
             // Wait a bit
@@ -97,6 +97,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
             // Unregister all services
             // jmdns.unregisterAllServices();
 
+            // Exception handling
         } catch (IOException e) {
             System.out.println("Error 4");
             System.out.println(e.getMessage());
@@ -107,7 +108,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
         }
 
     }
-
+    //server-side streaming method
     @Override
     public void monitorArea(AreaRequest request, StreamObserver<AreaResponse> responseObserver) {
         System.out.println("Monitor Area started ");
@@ -131,6 +132,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
                 }else {
                     issue = "Normal levels observed";
                 }
+
                 AreaResponse response = AreaResponse.newBuilder().setWaterUsage(usage).setIssues(issue)
                         .build();
                 responseObserver.onNext(response);
@@ -143,20 +145,21 @@ public class MonitoringService extends MonitoringServiceImplBase {
         System.out.println("Monitor Area is now completed.");
     }
 
-
+//client side streaming
     @Override
     public StreamObserver<SensorDataRequest> sendSensorData(StreamObserver<SensorDataResponse> responseObserver) {
-
         return new StreamObserver<SensorDataRequest>() {
-
 
             @Override
             public void onNext(SensorDataRequest request) {
                 int waterUsage = request.getWaterUsage();
+                //get area name data from client
                 String areaName = request.getAreaName();
+                //log to console to confirm
                 System.out.println("Received data for area: " + areaName + ", water usage: " + waterUsage);
                 String alertMessage = "";
                 String recommendationMessage;
+                //implement logic to create recommendation, based on different usage levels
                 if (waterUsage > 950) {
                     alertMessage = "Possible water leak detected in area " + areaName + " water usage "
                             + waterUsage + " recorded. " + "\n";
@@ -169,11 +172,12 @@ public class MonitoringService extends MonitoringServiceImplBase {
                 }else {
                     recommendationMessage = "All good. ";
                 }
+                //build the response to client & send
                 SensorDataResponse response = SensorDataResponse.newBuilder().setAlert(alertMessage)
                         .setRecommendation(recommendationMessage).build();
                 responseObserver.onNext(response);
             }
-
+            //Error handling
             @Override
             public void onError(Throwable t) {
                 System.err.println("Sensor data stream error: " + t.getMessage());
@@ -181,6 +185,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
 
             @Override
             public void onCompleted() {
+                //complete method and log to console to confirm
                 System.out.println("Sensor data stream completed");
                 responseObserver.onCompleted();
             }

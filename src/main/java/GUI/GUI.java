@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class GUI extends JFrame {
 
     private static Service serviceHost;
-
+    //constructor
     public GUI(Service serviceHost) {
         GUI.serviceHost = serviceHost;
     }
@@ -45,20 +45,19 @@ public class GUI extends JFrame {
 
     // GUI components for the Services
     private static JTextField userInputField;
-    private static JTextField userInputfield;
     private static JTextArea textArea;
     private static JTextField userInputField2;
 
 
     public GUI(int servicePort) {
+        //
         super("Services");
 
-        // Create the GUI components based on the service type, service port, and
-        // service host info
+        // Create the GUI components based on the service port
 
         if (servicePort == 50051) {
             // Create the GUI components for the Hot Water Service
-
+            //create and assign fields, and button to call the method
             JLabel tankTempLabel = new JLabel("Set Tank Temperature");
             userInputField = new JTextField(10);
             JButton setTankTempButton = new JButton("Set");
@@ -67,14 +66,14 @@ public class GUI extends JFrame {
             JLabel usageDataLabel = new JLabel("Send Usage Data");
             JButton sendUsageDataButton = new JButton("Send");
             sendUsageDataButton.addActionListener(e -> SendUsageData());
-
+            //add components to the panel
             JPanel panel = new JPanel();
             panel.add(tankTempLabel);
             panel.add(userInputField);
             panel.add(setTankTempButton);
             panel.add(usageDataLabel);
             panel.add(sendUsageDataButton);
-
+            //create area for the response to be printed out to user
             textArea = new JTextArea(10, 40);
             panel.add(new JScrollPane(textArea));
 
@@ -85,10 +84,9 @@ public class GUI extends JFrame {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             setVisible(true);
-
+        //same for the next 2 services
         } else if (servicePort == 50052) {
             // Create the GUI components for the Water Monitoring Service
-
             JLabel areaNameLabel = new JLabel("Area Name");
             userInputField = new JTextField(10);
             JButton monitorAreaButton = new JButton("Monitor Area");
@@ -155,7 +153,7 @@ public class GUI extends JFrame {
             setVisible(true);
         }
     }
-
+//connect the client file to the server through JmDNS
     private static Service connectToServer() {
         try {
 
@@ -173,33 +171,33 @@ public class GUI extends JFrame {
                     System.out.println("Discovered service: " + SERVICE_HOST + ":" + SERVICE_PORT + " ("
                             + serviceInfo.getName() + ")");
                 }
+                //create port variable and assign discovered port value
                 port = SERVICE_PORT;
             }
             jmdns.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return serviceHost;
 
     }
 
     public static void main(String[] args) throws Exception {
         Service serviceHost = connectToServer();
-        // String serviceType = getServiceType(port);
+        //build the channel
         ManagedChannel channel = ManagedChannelBuilder.forAddress(SERVICE_HOST, SERVICE_PORT).usePlaintext().build();
         System.out.println("line after managed channel port " + SERVICE_PORT + " host: " + SERVICE_HOST);
 
-        // stubs -- generate from proto file
+        // stubs for synchronous and asynchronous communications
         blockingStub = HotWaterServiceGrpc.newBlockingStub(channel);
         asyncStub = HotWaterServiceGrpc.newStub(channel);
         asyncStub2 = MonitoringServiceGrpc.newStub(channel);
         blockingStub3 = WaterRecyclingGrpc.newBlockingStub(channel);
         asyncStub3 = WaterRecyclingGrpc.newStub(channel);
-
+        //call the GUI(int) method passing the port value as a parameter
         new GUI(port);
 
-        // Timeout
+        // Timeout of 7 seconds for the channel to terminate gracefully
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -210,42 +208,39 @@ public class GUI extends JFrame {
                 }
             }
         });
-
         try {
             return;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     //Hot Water Service methods
     // unary rpc
     public static void setTankTemperature() {
         System.out.println("Calling Set Tank Temperature method.");
+        //acquire user input value with a getter
         int userInput = Integer.parseInt(userInputField.getText());
+        //build request including the user input to pass onto the server
         desiredTankTemp req = desiredTankTemp.newBuilder().setDesiredTemp(userInput).build();
         System.out.println("Sending user input to server.");
 
 
         // retrieving reply from service
         TankTempConfirm response = blockingStub.setTankTemperature(req);
-
+        //Console log to confirm
         System.out.println("Server response: " + response.getConfirmation());
         textArea.setText(response.getConfirmation() + "\n");
-
 
         //	JOptionPane to test response
         //	JOptionPane.showMessageDialog(null, "Tank temperature set to " + response.getConfirmation());
         System.out.println("Set Tank Temperature method completed.");
-
     }
 
     // client side streaming
     public static void SendUsageData() {
         StreamObserver<UsageDataResponse> responseObserver = new StreamObserver<UsageDataResponse>() {
-
+            //response from server using a getter (console log and GUI output)
             public void onNext(UsageDataResponse msg) {
                 System.out.println("Recommendation based on incoming data: " + msg.getRecommendation());
                 String message = "Recommendation based on incoming data:\n" + msg.getRecommendation();
@@ -253,9 +248,8 @@ public class GUI extends JFrame {
 
                 // JOptionPane for testing response
                 // JOptionPane.showMessageDialog(null, message);
-
             }
-
+            //Error handling
             @Override
             public void onError(Throwable t) {
                 t.printStackTrace();
@@ -264,11 +258,10 @@ public class GUI extends JFrame {
             @Override
             public void onCompleted() {
                 System.out.println("Send usage data call is completed ... ");
-
             }
 
         };
-
+        //request handling
         StreamObserver<UsageDataRequest> requestObserver = asyncStub.sendUsageData(responseObserver);
         // create random numbers for input
         Random rand = new Random();
@@ -291,9 +284,12 @@ public class GUI extends JFrame {
     }
 
     // Water Monitoring Services
+    //server side streaming
     private void MonitorArea() {
         System.out.println("Monitor Area commenced.");
+        //get user input from GUI
         String userInput = userInputField.getText();
+        //reset GUI response output area & counter to empty for repeat calls
         textArea.setText("");
         count=0;
 
@@ -306,7 +302,7 @@ public class GUI extends JFrame {
 
             public void onNext(AreaResponse response) {
                 // Handle the response from the server.
-                // increment count to keep track of cycles
+                // Increment count to keep track of cycles
                 count++;
                 //print to Client console
                 System.out.println("Cycle: " + count + "; " + response);
@@ -323,13 +319,14 @@ public class GUI extends JFrame {
 
             @Override
             public void onCompleted() {
-                // Called when all responses have been received from the server.
+                // All responses have been received from the server.
                 System.out.println("Monitor Area completed.");
+                //Reset counter to 0 for repeat calls
                 count =0;
             }
         });
     }
-
+    //bidirectional streaming method
     private void sendSensorData() {
         System.out.println("Send Sensor Data method commenced");
         textArea.setText("");
@@ -357,7 +354,7 @@ public class GUI extends JFrame {
 
         // Create a stream observer for the client requests
         StreamObserver<SensorDataRequest> requestObserver = asyncStub2.sendSensorData(responseObserver);
-
+        //create random mock data for streaming
         Random rand = new Random();
         String[] areaName = {"Car Wash", "Public Toilet", "Staff Toilet", "Restaurant1", "Restaurant2", "ServiceArea", "Boiler room", "Water Tanks"};
 
@@ -377,9 +374,6 @@ public class GUI extends JFrame {
                 count++;
                 System.out.println("Sending data for cycle " + count);
 
-
-
-                // Shutdown the channel if it is not already shutdown
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }
@@ -392,16 +386,16 @@ public class GUI extends JFrame {
     }
 
     //Water Recycling Service Methods
-    // implement unary rpc checkTankLevel method
-    // unary rpc
+    // unary rpc checkTankLevel method
     public static void checkTankLevel() {
 
         System.out.println("Calling Check Tank Level method ");
-
+        //get user input value from GUI
         userInput = Integer.parseInt(userInputField.getText());
+        //build and send request
         TankRequest req = TankRequest.newBuilder().setTankId(userInput).build();
 
-        // Set the timeout for the RPC to 2 seconds
+        // Set a timeout for the RPC to 2 seconds (dummy sleep line in server implementation for testing
         Deadline deadline = Deadline.after(2, TimeUnit.SECONDS);
 
         // Create a new blocking stub with the timeout set
@@ -412,6 +406,7 @@ public class GUI extends JFrame {
         TankResponse response;
         try {
             response = stubWithDeadline.checkTankLevel(req);
+            //timeout exception handling
         } catch (StatusRuntimeException e) {
             System.err.println("RPC failed: " + e.getStatus());
             return;
@@ -426,10 +421,10 @@ public class GUI extends JFrame {
 
     }
 
-
+    //server side stream
     public static void monitorTankLevels() {
         System.out.println("Calling Monitor Tank Level method ");
-
+        //get value of user input (second input filed in this frame)
         userInput = Integer.parseInt(userInputField2.getText());
         count=0;
         textArea.setText("");
@@ -438,8 +433,7 @@ public class GUI extends JFrame {
         MonitorLevels request = MonitorLevels.newBuilder().setTankId(userInput) //
                 .build();
 
-        // Call the monitorTankLevels() method with the request and a StreamObserver to
-        // handle the responses.
+        // Call the monitorTankLevels() method with the request and a StreamObserver to                                                 handle the responses.
         asyncStub3.monitorTankLevels(request, new StreamObserver<LevelsResponse>() {
             public void onNext(LevelsResponse response) {
                 // Handle the response from the server
@@ -451,13 +445,11 @@ public class GUI extends JFrame {
                 textArea.append(message);
 
             }
-
             @Override
             public void onError(Throwable t) {
                 // Handle any errors that occur during the streaming RPC.
                 t.printStackTrace();
             }
-
             @Override
             public void onCompleted() {
                 // Called when all responses have been received from the server.
@@ -469,7 +461,7 @@ public class GUI extends JFrame {
     // client side streaming
     public static void switchToRainwaterTank() {
         StreamObserver<RainwaterResponse> responseObserver = new StreamObserver<RainwaterResponse>() {
-
+            //response handling - console log & GUI reply field appended
             public void onNext(RainwaterResponse msg) {
                 System.out.println("receiving TankId and level data ");
                 System.out.println("Recommendation based on incoming data: " + msg.getCurrentTankUsed());
@@ -478,28 +470,23 @@ public class GUI extends JFrame {
 
                 // JOptionPane for testing response
                 // JOptionPane.showMessageDialog(null, message);
-
             }
-
             @Override
             public void onError(Throwable t) {
                 t.printStackTrace();
             }
-
             @Override
             public void onCompleted() {
                 System.out.println("Switch Rainwater tank method completed");
-
             }
-
         };
 
         StreamObserver<RainwaterTank> requestObserver = asyncStub3.switchToRainwaterTank(responseObserver);
         // create random numbers for input
         Random rand = new Random();
         textArea.setText("");
-        System.out.println("Switch Rainwater tank method comenced");
-
+        System.out.println("Switch Rainwater tank method commenced");
+        //create 5 instances of randomly generated mock data to stream
         for (int i = 0; i < 5; i++) {
             try {
                 requestObserver.onNext(RainwaterTank.newBuilder().setTankId(rand.nextInt(10)+1)

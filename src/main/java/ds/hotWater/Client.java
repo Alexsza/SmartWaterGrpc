@@ -23,32 +23,26 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
 
-
 public class Client extends JFrame {
 
-    private static HotWaterServiceGrpc.HotWaterServiceBlockingStub blockingStub;
-    private static HotWaterServiceGrpc.HotWaterServiceStub asyncStub;
-    private static int userInput = 0;
-    private static String SERVICE_TYPE = "_hotwater._tcp.local.";
-    private static String SERVICE_NAME = "HotWaterService";
+    private static HotWaterServiceBlockingStub blockingStub;
+    private static HotWaterServiceStub asyncStub;
     private static String SERVICE_HOST = "localhost";
     private static int SERVICE_PORT = 50051;
 
-    private JLabel tankTempLabel, usageDataLabel;
     private static JTextField userInputField;
-    private JButton setTankTempButton, sendUsageDataButton;
     private static JTextArea textArea;
 
     public Client() {
         super("Hot Water Service");
 
-        tankTempLabel = new JLabel("Set Tank Temperature");
+        JLabel tankTempLabel = new JLabel("Set Tank Temperature");
         userInputField = new JTextField(10);
-        setTankTempButton = new JButton("Set");
+        JButton setTankTempButton = new JButton("Set");
         setTankTempButton.addActionListener(e -> setTankTemperature());
 
-        usageDataLabel = new JLabel("Send Usage Data");
-        sendUsageDataButton = new JButton("Send");
+        JLabel usageDataLabel = new JLabel("Send Usage Data");
+        JButton sendUsageDataButton = new JButton("Send");
         sendUsageDataButton.addActionListener(e -> SendUsageData());
 
         JPanel panel = new JPanel();
@@ -74,11 +68,14 @@ public class Client extends JFrame {
 
         // Discovering service using JmDNS
         JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+        String SERVICE_TYPE = "_hotwater._tcp.local.";
+        String SERVICE_NAME = "HotWaterService";
         ServiceInfo serviceInfo = jmdns.getServiceInfo(SERVICE_TYPE, SERVICE_NAME);
         if (serviceInfo != null) {
             SERVICE_HOST = serviceInfo.getHostAddresses()[0];
             SERVICE_PORT = serviceInfo.getPort();
-            System.out.println("Discovered service: " + SERVICE_HOST + ":" + SERVICE_PORT);
+            System.out.println("Discovered service: " + SERVICE_HOST + ":" + SERVICE_PORT + " ("
+                    + serviceInfo.getName() + ")");
         } else {
             System.out.println("Service not found");
         }
@@ -93,33 +90,36 @@ public class Client extends JFrame {
 
         new Client();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        //Timeout
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
     }
 
     // unary rpc
     public static void setTankTemperature() {
-        userInput = Integer.parseInt(userInputField.getText());
+        System.out.println("Calling Set Tank Temperature method.");
+        int userInput = Integer.parseInt(userInputField.getText());
         desiredTankTemp req = desiredTankTemp.newBuilder().setDesiredTemp(userInput).build();
+        System.out.println("Sending user input to server.");
+
 
         // retrieving reply from service
         TankTempConfirm response = blockingStub.setTankTemperature(req);
 
         System.out.println("Server response: " + response.getConfirmation());
-        textArea.append(response.getConfirmation() + "\n");
+        textArea.setText(response.getConfirmation() + "\n");
 
 
         //	JOptionPane to test response
         //	JOptionPane.showMessageDialog(null, "Tank temperature set to " + response.getConfirmation());
+        System.out.println("Set Tank Temperature method completed.");
+
     }
 
     // client side streaming
@@ -127,10 +127,9 @@ public class Client extends JFrame {
         StreamObserver<UsageDataResponse> responseObserver = new StreamObserver<UsageDataResponse>() {
 
             public void onNext(UsageDataResponse msg) {
-                System.out.println("receiving hot water data ");
                 System.out.println("Recommendation based on incoming data: " + msg.getRecommendation());
                 String message = "Recommendation based on incoming data:\n" + msg.getRecommendation();
-                textArea.append(message);
+                textArea.setText(message);
 
                 // JOptionPane for testing response
                 //	JOptionPane.showMessageDialog(null, message);
@@ -144,7 +143,7 @@ public class Client extends JFrame {
 
             @Override
             public void onCompleted() {
-                System.out.println("Stream is completed ... receiving converted info");
+                System.out.println("Send usage data call is completed ... ");
 
             }
 
@@ -162,15 +161,15 @@ public class Client extends JFrame {
                         .setWaterPressure(rand.nextInt(30) + 20)
                         .build());
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (RuntimeException e) {
+            } catch (InterruptedException | RuntimeException e) {
                 e.printStackTrace();
             }
         }
 
         // Mark the end of requests
         requestObserver.onCompleted();
+        System.out.println("Hot water data stream to server complete ");
+
 
     }
 

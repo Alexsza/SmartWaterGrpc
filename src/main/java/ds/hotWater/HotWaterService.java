@@ -1,20 +1,20 @@
 package ds.hotWater;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Random;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
-
 import ds.hotWater.HotWaterServiceGrpc.HotWaterServiceImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
+
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Random;
 
 public class HotWaterService extends HotWaterServiceImplBase {
 
@@ -25,21 +25,17 @@ public class HotWaterService extends HotWaterServiceImplBase {
 
         hotwater.registerService(prop);
 
-        int port = Integer.valueOf(prop.getProperty("service_port")); // #50051
+        int port = Integer.parseInt(prop.getProperty("service_port")); // #50051
 
         try {
 
             Server server = ServerBuilder.forPort(port).addService(hotwater).build().start();
 
-            System.out.println("HotWater server started, listening on " + port);
+            System.out.println("Current server started, listening on " + port);
 
             server.awaitTermination();
 
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -49,7 +45,7 @@ public class HotWaterService extends HotWaterServiceImplBase {
 
         Properties prop = null;
 
-        try (InputStream input = new FileInputStream("src/main/resources/hotWater.properties")) {
+        try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/hotWater.properties"))) {
 
             prop = new Properties();
 
@@ -79,7 +75,7 @@ public class HotWaterService extends HotWaterServiceImplBase {
 
             String service_type = prop.getProperty("service_type");// "_http._tcp.local.";
             String service_name = prop.getProperty("service_name");// "example";
-            int service_port = Integer.valueOf(prop.getProperty("service_port"));// #.50051;
+            int service_port = Integer.parseInt(prop.getProperty("service_port"));// #.50051;
 
             String service_description_properties = prop.getProperty("service_description");//
 
@@ -106,8 +102,10 @@ public class HotWaterService extends HotWaterServiceImplBase {
     }
 
     public void setTankTemperature(desiredTankTemp request, StreamObserver<TankTempConfirm> responseObserver) {
+        System.out.println("Executing Set Tank Temperature method.");
 
-        System.out.println("receiving Set Tank Temperature method " + request.getDesiredTemp());
+
+        System.out.println("receiving user input temperature: " + request.getDesiredTemp());
 
         Random rand = new Random();
         int currentTemp = rand.nextInt(101);
@@ -121,6 +119,8 @@ public class HotWaterService extends HotWaterServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+        System.out.println("Set Tank Temperature method completed.");
+
     }
 
 
@@ -128,10 +128,10 @@ public class HotWaterService extends HotWaterServiceImplBase {
     @Override
     public StreamObserver<UsageDataRequest> sendUsageData(StreamObserver<UsageDataResponse> responseObserver) {
         return new StreamObserver<UsageDataRequest>() {
-            ArrayList<Integer> temp = new ArrayList<Integer>();
-            ArrayList<Integer> level = new ArrayList<Integer>();
-            ArrayList<Integer> flow = new ArrayList<Integer>();
-            ArrayList<Integer> pressure = new ArrayList<Integer>();
+            final ArrayList<Integer> temp = new ArrayList<Integer>();
+            final ArrayList<Integer> level = new ArrayList<Integer>();
+            final ArrayList<Integer> flow = new ArrayList<Integer>();
+            final ArrayList<Integer> pressure = new ArrayList<Integer>();
 
 
             @Override
@@ -150,7 +150,7 @@ public class HotWaterService extends HotWaterServiceImplBase {
 
             @Override
             public void onCompleted() {
-                System.out.printf("receiving Hot Water data method complete \n");
+                System.out.print("receiving Hot Water data method complete \n");
                 String message = "";
                 String message2 = "";
                 String message3 = "";
@@ -193,6 +193,8 @@ public class HotWaterService extends HotWaterServiceImplBase {
                 UsageDataResponse reply = UsageDataResponse.newBuilder().setRecommendation(result).build();
                 responseObserver.onNext(reply);
                 responseObserver.onCompleted();
+                System.out.println("Send Usage Data method completed.");
+
             }
         };
     }

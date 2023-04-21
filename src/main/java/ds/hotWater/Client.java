@@ -83,7 +83,7 @@ public class Client extends JFrame {
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(SERVICE_HOST, SERVICE_PORT).usePlaintext().build();
 
-        // stubs -- generate from proto file
+        // stubs
         blockingStub = HotWaterServiceGrpc.newBlockingStub(channel);
 
         asyncStub = HotWaterServiceGrpc.newStub(channel);

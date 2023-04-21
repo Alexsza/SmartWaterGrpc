@@ -92,7 +92,6 @@ public class Client2 extends JFrame {
 
         // Create a stub for the service
         //	stub = MonitoringServiceGrpc.newBlockingStub(channel);
-
         asyncStub = MonitoringServiceGrpc.newStub(channel);
 
         // new instance of the class to create and display the GUI
@@ -191,13 +190,10 @@ public class Client2 extends JFrame {
                 count++;
                 System.out.println("Sending data for cycle " + count);
 
-
-
                 // Shutdown the channel if it is not already shutdown
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }
-
         }
         // End the request stream
         requestObserver.onCompleted();

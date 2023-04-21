@@ -198,18 +198,14 @@ public class GUI extends JFrame {
         new GUI(port);
 
         // Timeout of 7 seconds for the channel to terminate gracefully
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    channel.shutdown().awaitTermination(7, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                channel.shutdown().awaitTermination(7, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }));
         try {
-            return;
         } catch (Exception e) {
             e.printStackTrace();
         }

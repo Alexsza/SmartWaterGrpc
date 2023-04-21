@@ -24,10 +24,6 @@ public class GUI extends JFrame {
 
     private static Service serviceHost;
 
-    public GUI(Service serviceHost) {
-        GUI.serviceHost = serviceHost;
-    }
-
     private static final long serialVersionUID = 1L;
     private static String SERVICE_HOST;
     private static int SERVICE_PORT;
@@ -182,12 +178,11 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args) throws Exception {
-        Service serviceHost = connectToServer();
         // String serviceType = getServiceType(port);
         ManagedChannel channel = ManagedChannelBuilder.forAddress(SERVICE_HOST, SERVICE_PORT).usePlaintext().build();
         System.out.println("line after managed channel port " + SERVICE_PORT + " host: " + SERVICE_HOST);
 
-        // stubs -- generate from proto file
+        /* stubs -- generate from proto file */
         blockingStub = HotWaterServiceGrpc.newBlockingStub(channel);
         asyncStub = HotWaterServiceGrpc.newStub(channel);
         asyncStub2 = MonitoringServiceGrpc.newStub(channel);
@@ -197,21 +192,16 @@ public class GUI extends JFrame {
         new GUI(port);
 
         // Timeout
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    channel.shutdown().awaitTermination(7, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                channel.shutdown().awaitTermination(7, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
         try {
-            return;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -487,9 +477,7 @@ public class GUI extends JFrame {
                 requestObserver.onNext(RainwaterTank.newBuilder().setTankId(rand.nextInt(10)+1)
                         .setTankLevels(rand.nextInt(1000) + 1).build());
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (RuntimeException e) {
+            } catch (InterruptedException | RuntimeException e) {
                 e.printStackTrace();
             }
         }

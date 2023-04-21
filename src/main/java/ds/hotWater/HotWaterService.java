@@ -128,10 +128,10 @@ public class HotWaterService extends HotWaterServiceImplBase {
     @Override
     public StreamObserver<UsageDataRequest> sendUsageData(StreamObserver<UsageDataResponse> responseObserver) {
         return new StreamObserver<UsageDataRequest>() {
-            final ArrayList<Integer> temp = new ArrayList<Integer>();
-            final ArrayList<Integer> level = new ArrayList<Integer>();
-            final ArrayList<Integer> flow = new ArrayList<Integer>();
-            final ArrayList<Integer> pressure = new ArrayList<Integer>();
+            final ArrayList<Integer> temp = new ArrayList<>();
+            final ArrayList<Integer> level = new ArrayList<>();
+            final ArrayList<Integer> flow = new ArrayList<>();
+            final ArrayList<Integer> pressure = new ArrayList<>();
 
 
             @Override

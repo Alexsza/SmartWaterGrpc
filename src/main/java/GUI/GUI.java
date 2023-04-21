@@ -186,7 +186,6 @@ public class GUI extends JFrame {
         Service serviceHost = connectToServer();
         //build the channel
         ManagedChannel channel = ManagedChannelBuilder.forAddress(SERVICE_HOST, SERVICE_PORT).usePlaintext().build();
-        System.out.println("line after managed channel port " + SERVICE_PORT + " host: " + SERVICE_HOST);
 
         // stubs for synchronous and asynchronous communications
         blockingStub = HotWaterServiceGrpc.newBlockingStub(channel);

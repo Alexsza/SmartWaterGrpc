@@ -15,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Random;
 
+import static java.util.logging.Logger.*;
+
 public class MonitoringService extends MonitoringServiceImplBase {
     //main method
     public static void main(String[] args) {
@@ -30,6 +32,8 @@ public class MonitoringService extends MonitoringServiceImplBase {
         try {
 
             Server server = ServerBuilder.forPort(port).addService(monitoring).build().start();
+
+            getLogger("javax.jmdns").setLevel(java.util.logging.Level.SEVERE);
 
             System.out.println("Water Monitoring server started, listening on " + port);
 
@@ -145,7 +149,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
         System.out.println("Monitor Area is now completed.");
     }
 
-//client side streaming
+//bidirectional streaming
     @Override
     public StreamObserver<SensorDataRequest> sendSensorData(StreamObserver<SensorDataResponse> responseObserver) {
         return new StreamObserver<SensorDataRequest>() {
@@ -172,6 +176,7 @@ public class MonitoringService extends MonitoringServiceImplBase {
                 }else {
                     recommendationMessage = "All good. ";
                 }
+
                 //build the response to client & send
                 SensorDataResponse response = SensorDataResponse.newBuilder().setAlert(alertMessage)
                         .setRecommendation(recommendationMessage).build();

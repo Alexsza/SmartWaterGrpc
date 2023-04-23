@@ -35,6 +35,8 @@ public class HotWaterService extends HotWaterServiceImplBase {
 
             System.out.println("Current server started, listening on " + port);
 
+            java.util.logging.Logger.getLogger("javax.jmdns").setLevel(java.util.logging.Level.SEVERE);
+
             server.awaitTermination();
 
         } catch (IOException | InterruptedException e) {

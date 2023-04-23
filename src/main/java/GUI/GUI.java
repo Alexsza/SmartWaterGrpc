@@ -50,11 +50,8 @@ public class GUI extends JFrame {
 
 
     public GUI(int servicePort) {
-        //
         super("Services");
-
         // Create the GUI components based on the service port
-
         if (servicePort == 50051) {
             // Create the GUI components for the Hot Water Service
             //create and assign fields, and button to call the method
@@ -62,7 +59,6 @@ public class GUI extends JFrame {
             userInputField = new JTextField(10);
             JButton setTankTempButton = new JButton("Set");
             setTankTempButton.addActionListener(e -> setTankTemperature());
-
             JLabel usageDataLabel = new JLabel("Send Usage Data");
             JButton sendUsageDataButton = new JButton("Send");
             sendUsageDataButton.addActionListener(e -> SendUsageData());
@@ -74,13 +70,11 @@ public class GUI extends JFrame {
             panel.add(usageDataLabel);
             panel.add(sendUsageDataButton);
             //create area for the response to be printed out to user
-            textArea = new JTextArea(10, 40);
+            textArea = new JTextArea(15, 50);
             panel.add(new JScrollPane(textArea));
-
             add(panel);
-
             // Set the preferred size of the frame
-            setPreferredSize(new Dimension(500, 300));
+            setPreferredSize(new Dimension(700, 400));
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             setVisible(true);
@@ -103,13 +97,13 @@ public class GUI extends JFrame {
             panel.add(sensorDataLabel);
             panel.add(sendSensorDataButton);
 
-            textArea = new JTextArea(20, 80);
+            textArea = new JTextArea(15, 50);
             panel.add(new JScrollPane(textArea));
 
             add(panel);
 
             // Set the preferred size of the frame
-            setPreferredSize(new Dimension(1000, 500));
+            setPreferredSize(new Dimension(700, 400));
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             setVisible(true);
@@ -141,13 +135,13 @@ public class GUI extends JFrame {
             panel.add(rainwaterTankLabel);
             panel.add(switchRainwaterTankButton);
 
-            textArea = new JTextArea(10, 40);
+            textArea = new JTextArea(15, 50);
             panel.add(new JScrollPane(textArea));
 
             add(panel);
 
             // Set the preferred size of the frame
-            setPreferredSize(new Dimension(800, 500));
+            setPreferredSize(new Dimension(700, 400));
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             setVisible(true);

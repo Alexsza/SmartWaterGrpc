@@ -20,17 +20,19 @@ public class WaterRecycling extends WaterRecyclingImplBase {
     //main method
     public static void main(String[] args) {
         //create new object of the class
-        WaterRecycling monitoring = new WaterRecycling();
+        WaterRecycling recycling = new WaterRecycling();
 
-        Properties prop = monitoring.getProperties();
+        Properties prop = recycling.getProperties();
 
-        monitoring.registerService(prop);
+        recycling.registerService(prop);
         //Access point to the service is represented by port variables.
         int port = Integer.parseInt(prop.getProperty("service_port")); // #50053
         //build server
         try {
 
-            Server server = ServerBuilder.forPort(port).addService(monitoring).build().start();
+            Server server = ServerBuilder.forPort(port).addService(recycling).build().start();
+
+            java.util.logging.Logger.getLogger("javax.jmdns").setLevel(java.util.logging.Level.SEVERE);
 
             System.out.println("Water Monitoring server started, listening on " + port);
 
@@ -117,10 +119,10 @@ public class WaterRecycling extends WaterRecyclingImplBase {
         String confirmation = "TankID " + tankID + " current level is: " + currentLevel + " litres ";
         System.out.println(confirmation);
 
-        // Add a sleep to simulate a long-running process
+        /* Add a sleep to simulate a long-running process */
         try {
-            Thread.sleep(1000); // Sleep for 1 seconds
-            //    Thread.sleep(3000); // Sleep for 3 seconds
+           Thread.sleep(500); // Sleep for 0.5 seconds
+            // Thread.sleep(3000); // Sleep for 3 seconds
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
